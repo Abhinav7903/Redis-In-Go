@@ -109,6 +109,20 @@ func (s *Server) handleConnection(conn net.Conn) {
 			} else {
 				conn.Write([]byte(fmt.Sprintf("TTL: %d seconds\n", int(ttl.Seconds()))))
 			}
+
+		case "Exit":
+			conn.Write([]byte("Bye!\n"))
+			return
+		case "HELP":
+			conn.Write([]byte("Available commands:\n"))
+			conn.Write([]byte("SET key value\n"))
+			conn.Write([]byte("GET key\n"))
+			conn.Write([]byte("DELETE key\n"))
+			conn.Write([]byte("EXISTS key\n"))
+			conn.Write([]byte("EXPIRE key ttl_in_seconds\n"))
+			conn.Write([]byte("TTL key\n"))
+			conn.Write([]byte("EXIT\n"))
+			conn.Write([]byte("HELP\n"))
 		default:
 			conn.Write([]byte("Unknown command\n"))
 		}
