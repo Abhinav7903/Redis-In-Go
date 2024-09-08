@@ -1,9 +1,20 @@
 package main
 
-import "fmt"
+import (
+	"go-idis/internal/idis"
+	"go-idis/server"
+	"log"
+)
 
 func main() {
-	fmt.Println("Hello, World!")
-	fmt.Println("staring of the redis building")
+	// Initialize the in-memory repository
+	store := idis.NewInMemoryRepository()
 
+	// Create a new TCP server
+	srv := server.NewServer(":1234", store)
+
+	// Run the server
+	if err := srv.Run(); err != nil {
+		log.Fatalf("Server failed: %v", err)
+	}
 }
