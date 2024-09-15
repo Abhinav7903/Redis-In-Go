@@ -26,7 +26,8 @@ func (s *Server) Run() error {
 	}
 	defer listener.Close()
 
-	fmt.Println("Server running on", s.addr)
+	fmt.Printf("Server running on %s\n", s.addr)
+	fmt.Println("Type 'exit' to shut down the server.")
 
 	for {
 		conn, err := listener.Accept()
@@ -35,6 +36,7 @@ func (s *Server) Run() error {
 			continue
 		}
 
+		fmt.Printf("Client connected from %s\n", conn.RemoteAddr().String())
 		go s.handleConnection(conn)
 	}
 }

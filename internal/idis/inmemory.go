@@ -7,7 +7,7 @@ import (
 )
 
 type InMemoryRepository struct {
-	store  map[string]string
+	store  map[string][]string
 	mu     sync.RWMutex
 	expiry map[string]time.Time
 }
@@ -15,29 +15,36 @@ type InMemoryRepository struct {
 // NewInMemoryRepository creates a new instance of InMemoryRepository
 func NewInMemoryRepository() *InMemoryRepository {
 	return &InMemoryRepository{
-		store:  make(map[string]string),
+		store:  make(map[string][]string),
 		expiry: make(map[string]time.Time),
 	}
 }
 
-// Set adds or updates a key-value pair in the store
-func (r *InMemoryRepository) Set(key string, value string) error {
+// Set adds one or more values to a key (appends values to the key's slice)
+func (r *InMemoryRepository) Set(key string, values ...string) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()
-	r.store[key] = value
+
+	// If the key already exists, append the new values
+	if existingValues, ok := r.store[key]; ok {
+		r.store[key] = append(existingValues, values...)
+	} else {
+		// If the key doesn't exist, create a new slice with the values
+		r.store[key] = values
+	}
 	return nil
 }
 
-// Get retrieves a value based on the given key
-func (r *InMemoryRepository) Get(key string) (string, error) {
+// Get retrieves all values associated with a key
+func (r *InMemoryRepository) Get(key string) ([]string, error) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
 
-	value, ok := r.store[key]
+	values, ok := r.store[key]
 	if !ok {
-		return "", errors.New("key not found")
+		return nil, errors.New("key not found")
 	}
-	return value, nil
+	return values, nil
 }
 
 // Delete removes a key-value pair from the store
