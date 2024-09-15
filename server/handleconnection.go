@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -120,8 +121,27 @@ func (s *Server) handleConnection(conn net.Conn) {
 				fmt.Fprintf(conn, "TTL: %d seconds\n", int(ttl.Seconds()))
 			}
 
+		case "RAND":
+			if len(parts) != 3 {
+				fmt.Fprint(conn, "Usage: RAND key offset\n")
+				continue
+			}
+			key := parts[1]
+			offset, err := strconv.Atoi(parts[2])
+			if err != nil {
+				fmt.Fprint(conn, "Invalid offset value\n")
+				continue
+			}
+			value, err := s.store.RandomValues(key, offset)
+			if err != nil {
+				fmt.Fprint(conn, err.Error()+"\n")
+			} else {
+				fmt.Fprint(conn, "Values: "+strings.Join(value, ". ")+"\n")
+			}
+
 		case "EXIT":
 			fmt.Fprint(conn, "Bye!\n")
+			conn.Close()
 			return
 
 		case "HELP":

@@ -9,4 +9,5 @@ type Repository interface {
 	Exists(key string) bool
 	Expire(key string, ttl time.Duration) error
 	TTL(key string) (time.Duration, error)
+	RandomValues(key string, offset int) ([]string, error)
 }

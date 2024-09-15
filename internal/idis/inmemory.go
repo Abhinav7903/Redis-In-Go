@@ -100,3 +100,20 @@ func (r *InMemoryRepository) TTL(key string) (time.Duration, error) {
 
 	return time.Until(expiration), nil
 }
+
+// Get random value from the store key
+func (r *InMemoryRepository) RandomValues(key string, offset int) ([]string, error) {
+	r.mu.RLock()
+	defer r.mu.RUnlock()
+
+	values, ok := r.store[key]
+	if !ok {
+		return nil, errors.New("key not found")
+	}
+
+	if offset >= len(values) {
+		return nil, errors.New("offset exceeds the number of values")
+	}
+
+	return values[offset:], nil
+}
