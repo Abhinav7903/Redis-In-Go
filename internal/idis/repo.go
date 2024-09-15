@@ -10,4 +10,8 @@ type Repository interface {
 	Expire(key string, ttl time.Duration) error
 	TTL(key string) (time.Duration, error)
 	RandomValues(key string, offset int) ([]string, error)
+	SetUnique(key string, values ...string) error
+	RemoveValue(key string, value string) error
+	GetUnique(key string) ([]string, error)
+	GetKeyFromValue(value string) ([]string, error)
 }
