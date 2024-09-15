@@ -64,7 +64,7 @@ func (s *Server) processCommand(conn net.Conn, message string) error {
 	case "GETKEY":
 		return s.handleGetKey(conn, args)
 	case "EXIT":
-		fmt.Fprint(conn, "Bye!\n")
+		fmt.Fprint(conn, "Goodbye!\n")
 		conn.Close()
 		return nil
 	case "HELP":
