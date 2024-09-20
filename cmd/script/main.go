@@ -19,7 +19,7 @@ func main() {
 
 	key := os.Args[1]
 
-	conn, err := net.Dial("tcp", "127.0.0.1:1234")
+	conn, err := net.Dial("tcp", "0.0.0.0:1234")
 	if err != nil {
 		log.Fatalf("Failed to connect to server: %v", err)
 	}
@@ -27,7 +27,7 @@ func main() {
 
 	// Generate values from 1 to 2000
 	var values []string
-	for i := 1; i <= 30000000; i++ {
+	for i := 1; i <= 100; i++ {
 		values = append(values, strconv.Itoa(i))
 	}
 

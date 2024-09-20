@@ -4,6 +4,7 @@ import (
 	"go-idis/internal/idis"
 	"go-idis/server"
 	"log"
+	"time"
 )
 
 func main() {
@@ -12,6 +13,10 @@ func main() {
 
 	// Create a new TCP server
 	srv := server.NewServer("0.0.0.0:1234", store) //you can change the address and port here to your desired address and port
+
+	// dump file every 2 hours
+	filepath := "/home/hornet/Downloads/go-idis/Go-idis/dump.json"
+	store.StartAutoDump(filepath, 2*time.Minute)
 
 	// Run the server
 	if err := srv.Run(); err != nil {
