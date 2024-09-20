@@ -11,7 +11,7 @@ import (
 func (s *Server) handleConnection(conn net.Conn) {
 	defer conn.Close()
 	reader := bufio.NewReader(conn)
-	prompt := "127.0.0.1:1234> "
+	prompt := s.addr + "> "
 
 	for {
 		// Display prompt to the client
