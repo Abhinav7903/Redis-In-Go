@@ -63,6 +63,8 @@ func (s *Server) processCommand(conn net.Conn, message string) error {
 		return s.handleGetUnique(conn, args)
 	case "GETKEY":
 		return s.handleGetKey(conn, args)
+	case "LOADDUMP":
+		return s.handleLoadDump(conn, args)
 	case "EXIT":
 		fmt.Fprint(conn, "Goodbye!\n")
 		conn.Close()

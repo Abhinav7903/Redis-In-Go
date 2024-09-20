@@ -14,4 +14,6 @@ type Repository interface {
 	RemoveValue(key string, value string) error
 	GetUnique(key string) ([]string, error)
 	GetKeyFromValue(value string) ([]string, error)
+	DumpToFile(filename string) error
+	LoadFromDump(filename string) error
 }

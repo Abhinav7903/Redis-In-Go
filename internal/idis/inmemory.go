@@ -1,8 +1,12 @@
 package idis
 
 import (
+	"encoding/json"
 	"errors"
+	"fmt"
+	"io/ioutil"
 	"math/rand"
+	"os"
 	"sync"
 	"time"
 )
@@ -279,4 +283,84 @@ func (r *InMemoryRepository) GetKeyFromValue(value string) ([]string, error) {
 	}
 
 	return keys, nil
+}
+
+// DumpToFile serializes the in-memory store and writes it to a file.
+func (r *InMemoryRepository) DumpToFile(filename string) error {
+	r.mu.RLock()
+	defer r.mu.RUnlock()
+
+	// Create a map that holds both store and expiry for dump
+	data := struct {
+		Store         map[string][]string
+		Expiry        map[string]time.Time
+		ReverseLookup map[string][]string
+	}{
+		Store:         r.store,
+		Expiry:        r.expiry,
+		ReverseLookup: r.reverseLookup,
+	}
+
+	// Serialize the data to JSON
+	bytes, err := json.Marshal(data)
+	if err != nil {
+		return err
+	}
+
+	// Write the JSON data to the dump file
+	return ioutil.WriteFile(filename, bytes, 0644)
+}
+
+// LoadFromDump reads the dump file and restores the in-memory store.
+func (r *InMemoryRepository) LoadFromDump(filename string) error {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+
+	// Check if the dump file exists
+	if _, err := os.Stat(filename); os.IsNotExist(err) {
+		return fmt.Errorf("dump file does not exist")
+	}
+
+	// Read the dump file
+	bytes, err := ioutil.ReadFile(filename)
+	if err != nil {
+		return err
+	}
+
+	// Create a temporary struct to load the dump data
+	data := struct {
+		Store         map[string][]string
+		Expiry        map[string]time.Time
+		ReverseLookup map[string][]string
+	}{}
+
+	// Unmarshal the JSON data from the file
+	err = json.Unmarshal(bytes, &data)
+	if err != nil {
+		return err
+	}
+
+	// Restore the in-memory store and expiry
+	r.store = data.Store
+	r.expiry = data.Expiry
+	r.reverseLookup = data.ReverseLookup
+
+	return nil
+}
+
+// StartAutoDump starts a goroutine to periodically dump the in-memory store to a file every 2 hours.
+func (r *InMemoryRepository) StartAutoDump(filepath string, interval time.Duration) {
+	go func() {
+		ticker := time.NewTicker(interval)
+		defer ticker.Stop()
+
+		for range ticker.C {
+			err := r.DumpToFile(filepath)
+			if err != nil {
+				fmt.Println("Error dumping data:", err)
+			} else {
+				fmt.Println("Data successfully dumped to file:", filepath)
+			}
+		}
+	}()
 }
