@@ -28,7 +28,7 @@ func (s *Server) Run() error {
 
 	fmt.Printf("Server running on %s\n", s.addr)
 	fmt.Println("Type 'exit' to shut down the server.")
-
+	fmt.Println()
 	for {
 		conn, err := listener.Accept()
 		if err != nil {

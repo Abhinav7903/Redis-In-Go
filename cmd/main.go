@@ -15,7 +15,7 @@ func main() {
 	srv := server.NewServer("0.0.0.0:1234", store) //you can change the address and port here to your desired address and port
 
 	// dump file every 2 hours
-	filepath := "/home/hornet/Downloads/go-idis/Go-idis/dump.json"
+	filepath := "dump.json"
 	store.StartAutoDump(filepath, 2*time.Minute)
 
 	// Run the server
