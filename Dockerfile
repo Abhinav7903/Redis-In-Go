@@ -13,5 +13,7 @@ COPY . .
 # Build the Go application
 RUN go build -o main ./cmd
 
+EXPOSE 1234
+
 # Command to run the application
 CMD ["./main"]
