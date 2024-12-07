@@ -1,6 +1,6 @@
 # Go-idis
 
-Go-idis is a Redis-like feature implemented in Go. This project aims to provide a simple in-memory database with persistent storage capabilities, similar to Redis.
+Go-idis is an open-source in-memory database written in Go. This project aims to provide a lightweight and simple solution for managing key-value data with support for persistent storage.
 
 ## Table of Contents
 - [Features](#features)
@@ -14,13 +14,16 @@ Go-idis is a Redis-like feature implemented in Go. This project aims to provide 
 
 ## Features
 
-- In-memory data storage
-- Persistent data dump
-- Simple TCP server interface
+- **In-Memory Data Storage**: Fast, lightweight storage for key-value pairs.
+- **Persistent Data Dump**: Supports saving and reloading data from disk.
+- **Simple TCP Server Interface**: Easy-to-use communication protocol over TCP.
+- **Minimalistic Design**: No reliance on complex data structures (yet).
+
+Future updates will incorporate advanced data structures for enhanced functionality.
 
 ## Installation
 
-To install Go-idis, make sure you have Go installed and set up on your machine. Then, clone the repository and build the project:
+Ensure Go is installed on your system. Then, clone the repository and build the project:
 
 ```bash
 git clone https://github.com/Abhinav7903/Go-idis.git
@@ -30,19 +33,19 @@ go build -o go-idis ./cmd/main.go
 
 ## Usage
 
-To start the Go-idis server, run the following command:
+To start the Go-idis server, execute the following:
 
 ```bash
 ./go-idis
 ```
 
-By default, the server will run on `0.0.0.0:1234`. You can modify the address and port in the `main.go` file.
+By default, the server listens on `0.0.0.0:1234`. Modify the address and port in the `main.go` file if needed.
 
 ## Examples
 
 ### Running the Server
 
-To run the server:
+Run the server with:
 
 ```bash
 ./go-idis
@@ -50,7 +53,7 @@ To run the server:
 
 ### Using the Script
 
-To use the provided script to set a key with values from 1 to 100:
+The provided script can populate a key with values from 1 to 100:
 
 ```bash
 go run cmd/script/main.go mykey
@@ -58,7 +61,7 @@ go run cmd/script/main.go mykey
 
 ### Example Code
 
-Here is an example of how to use Go-idis in your Go project:
+Below is an example of how to integrate Go-idis into a Go project:
 
 ```go
 package main
@@ -77,11 +80,11 @@ func main() {
     // Create a new TCP server
     srv := server.NewServer("0.0.0.0:1234", store)
 
-    // Dump file every 2 hours
+    // Enable periodic data dumps
     filepath := "/path/to/dump.json"
-    store.StartAutoDump(filepath, 2*time.Minute) //change the time according to your need
+    store.StartAutoDump(filepath, 2*time.Hour)
 
-    // Run the server
+    // Start the server
     if err := srv.Run(); err != nil {
         log.Fatalf("Server failed: %v", err)
     }
@@ -90,37 +93,25 @@ func main() {
 
 ## API Reference
 
-### Setting a Key
+### Commands
 
-To set a key with the Go-idis server:
-
-```bash
-SET key value
-```
-
-### Getting a Key
-
-To get a key from the Go-idis server:
-
-```bash
-GET key
-```
-
-### Deleting a Key
-
-To delete a key from the Go-idis server:
-
-```bash
-DELETE key
-```
-### Help command
-```bash
-HELP
-```
-
-:)
+- **Set a Key**:
+  ```bash
+  SET key value
+  ```
+- **Get a Key**:
+  ```bash
+  GET key
+  ```
+- **Delete a Key**:
+  ```bash
+  DELETE key
+  ```
+- **Help Command**:
+  ```bash
+  HELP
+  ```
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](https://github.com/Abhinav7903/Go-idis/blob/main/LICENSE) file for details.
-
+This project is licensed under the MIT License. See the [LICENSE](https://github.com/Abhinav7903/Go-idis/blob/main/LICENSE) file for details.
