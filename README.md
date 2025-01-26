@@ -16,7 +16,7 @@ Go-idis is an open-source in-memory database written in Go. This project aims to
 
 - **In-Memory Data Storage**: Fast, lightweight storage for key-value pairs.
 - **Persistent Data Dump**: Supports saving and reloading data from disk.
-- **Simple TCP Server Interface**: Easy-to-use communication protocol over TCP.
+- **Simple HTTP and TCP Server Interfaces**: Easy-to-use communication protocols.
 - **Minimalistic Design**: No reliance on complex data structures (yet).
 
 Future updates will incorporate advanced data structures for enhanced functionality.
@@ -59,59 +59,48 @@ The provided script can populate a key with values from 1 to 100:
 go run cmd/script/main.go mykey
 ```
 
-### Example Code
+### HTTP Requests
 
-Below is an example of how to integrate Go-idis into a Go project:
+You can interact with the server using HTTP requests. Below are examples of available routes:
 
-```go
-package main
+- **Set a Key** (POST)
+    ```bash
+    curl -X POST http://localhost:1234/set/a -H "Content-Type: application/json" -d '["45", "56"]'
+    ```
 
-import (
-    "go-idis/internal/idis"
-    "go-idis/server"
-    "log"
-    "time"
-)
+- **Get a Key** (GET)
+    ```bash
+    curl -X GET http://localhost:1234/get/a
+    ```
 
-func main() {
-    // Initialize the in-memory repository
-    store := idis.NewInMemoryRepository()
+- **Get Unique Values for a Key** (GET)
+    ```bash
+    curl -X GET http://localhost:1234/getuq/a
+    ```
 
-    // Create a new TCP server
-    srv := server.NewServer("0.0.0.0:1234", store)
-
-    // Enable periodic data dumps
-    filepath := "/path/to/dump.json"
-    store.StartAutoDump(filepath, 2*time.Hour)
-
-    // Start the server
-    if err := srv.Run(); err != nil {
-        log.Fatalf("Server failed: %v", err)
-    }
-}
-```
+- **Delete a Key** (DELETE)
+    ```bash
+    curl -X DELETE http://localhost:1234/delete/a
+    ```
 
 ## API Reference
 
-### Commands
+- **Set a Key** (POST): `/set/{key}`
+    - Example: `curl -X POST http://localhost:1234/set/a -H "Content-Type: application/json" -d '["45", "56"]'`
 
-- **Set a Key**:
-  ```bash
-  SET key value
-  ```
-- **Get a Key**:
-  ```bash
-  GET key
-  ```
-- **Delete a Key**:
-  ```bash
-  DELETE key
-  ```
-- **Help Command**:
-  ```bash
-  HELP
-  ```
+- **Get a Key** (GET): `/get/{key}`
+    - Example: `curl -X GET http://localhost:1234/get/a`
+
+- **Get Unique Values for a Key** (GET): `/getuq/{key}`
+    - Example: `curl -X GET http://localhost:1234/getuq/a`
+
+- **Delete a Key** (DELETE): `/delete/{key}`
+    - Example: `curl -X DELETE http://localhost:1234/delete/a`
 
 ## License
 
 This project is licensed under the MIT License. See the [LICENSE](https://github.com/Abhinav7903/Go-idis/blob/main/LICENSE) file for details.
+
+- ```bash
+  :)
+  ```
