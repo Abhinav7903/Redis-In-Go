@@ -28,6 +28,12 @@ func (s *Server) RegisterAPIs() {
 	// Check if the key exists
 	s.router.HandleFunc("/exists/{key}", s.handlerExisthttp()).Methods(http.MethodGet, http.MethodOptions)
 
+	// Get the expiration time for the key
+	s.router.HandleFunc("/ttl/{key}", s.handlerTTL()).Methods(http.MethodGet, http.MethodOptions)
+
+	// Set the expiration time for the key
+	s.router.HandleFunc("/expire/{key}", s.handlerExpire()).Methods(http.MethodPost, http.MethodOptions)
+
 	// help
 	s.router.HandleFunc("/help", s.handlerHelp()).Methods(http.MethodGet, http.MethodOptions)
 }
