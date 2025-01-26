@@ -5,38 +5,56 @@ import (
 	"go-idis/internal/idis"
 	"log"
 	"net"
+	"net/http"
+
+	"github.com/gorilla/mux"
 )
 
 type Server struct {
-	addr  string
-	store idis.Repository
+	httpAddr   string
+	telnetAddr string
+	store      idis.Repository
+	router     *mux.Router
 }
 
-func NewServer(addr string, store idis.Repository) *Server {
+// NewServer initializes the Server with HTTP and Telnet addresses
+func NewServer(httpAddr, telnetAddr string, store idis.Repository) *Server {
 	return &Server{
-		addr:  addr,
-		store: store,
+		httpAddr:   httpAddr,
+		telnetAddr: telnetAddr,
+		store:      store,
+		router:     mux.NewRouter(),
 	}
 }
 
+// Run starts the HTTP and Telnet servers concurrently
 func (s *Server) Run() error {
-	listener, err := net.Listen("tcp", s.addr)
+	// Start the HTTP server in a separate goroutine
+	go func() {
+		s.RegisterAPIs()
+		fmt.Printf("HTTP server running on %s\n", s.httpAddr)
+		if err := http.ListenAndServe(s.httpAddr, s.router); err != nil {
+			log.Fatalf("HTTP server failed: %v", err)
+		}
+	}()
+
+	// Start the Telnet server
+	listener, err := net.Listen("tcp", s.telnetAddr)
 	if err != nil {
-		return err
+		return fmt.Errorf("telnet server failed to start: %w", err)
 	}
 	defer listener.Close()
+	fmt.Printf("Telnet server running on %s\n", s.telnetAddr)
+	fmt.Println("Type 'exit' to shut down the Telnet server.")
 
-	fmt.Printf("Server running on %s\n", s.addr)
-	fmt.Println("Type 'exit' to shut down the server.")
-	fmt.Println()
+	// Accept Telnet connections in a loop
 	for {
 		conn, err := listener.Accept()
 		if err != nil {
 			log.Println("Connection error:", err)
 			continue
 		}
-
-		fmt.Printf("Client connected from %s\n", conn.RemoteAddr().String())
+		fmt.Printf("Telnet client connected from %s\n", conn.RemoteAddr().String())
 		go s.handleConnection(conn)
 	}
 }

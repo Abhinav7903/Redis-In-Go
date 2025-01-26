@@ -19,7 +19,7 @@ func main() {
 
 	key := os.Args[1]
 
-	conn, err := net.Dial("tcp", "0.0.0.0:1234")
+	conn, err := net.Dial("tcp", "0.0.0.0:5678") // Connect to the Telnet server
 	if err != nil {
 		log.Fatalf("Failed to connect to server: %v", err)
 	}

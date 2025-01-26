@@ -364,3 +364,15 @@ func (r *InMemoryRepository) StartAutoDump(filepath string, interval time.Durati
 		}
 	}()
 }
+
+// flush removes all keys and values from the store
+func (r *InMemoryRepository) DeleteAll() error {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+
+	r.store = make(map[string][]string)
+	r.expiry = make(map[string]time.Time)
+	r.reverseLookup = make(map[string][]string)
+
+	return nil
+}

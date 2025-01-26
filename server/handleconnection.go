@@ -11,19 +11,20 @@ import (
 func (s *Server) handleConnection(conn net.Conn) {
 	defer conn.Close()
 	reader := bufio.NewReader(conn)
-	prompt := s.addr + "> "
+	prompt := "go-idis> "
 
 	for {
 		// Display prompt to the client
 		fmt.Fprint(conn, prompt)
 
+		// Read client input
 		message, err := reader.ReadString('\n')
 		if err != nil {
 			log.Println("Read error:", err)
 			return
 		}
 
-		// Process command
+		// Process the command
 		if err := s.processCommand(conn, strings.TrimSpace(message)); err != nil {
 			fmt.Fprint(conn, err.Error()+"\n")
 		}
@@ -31,14 +32,14 @@ func (s *Server) handleConnection(conn net.Conn) {
 }
 
 func (s *Server) processCommand(conn net.Conn, message string) error {
-	parts := strings.Split(message, " ")
+	parts := strings.Fields(message) // Split by whitespace
 
 	if len(parts) == 0 {
 		return fmt.Errorf("invalid command")
 	}
 
-	command := strings.ToUpper(parts[0])
-	args := parts[1:]
+	command := strings.ToUpper(parts[0]) // First part is the command
+	args := parts[1:]                    // Remaining parts are arguments
 
 	switch command {
 	case "SET":
